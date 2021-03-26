@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
+import static utils.Lang.L;
+
 /**
  * @author AaronW
  */
@@ -16,7 +18,7 @@ public class ScreenWindow extends JFrame {
         int windowWidth = 1440;
         int windowHeight = 810;
 
-        this.setTitle("控制桌面");
+        this.setTitle(L("title"));
         this.setSize(windowWidth, windowHeight);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         System.out.println("screen size" + screenSize.toString());

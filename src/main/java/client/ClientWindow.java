@@ -9,7 +9,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Scanner;
+
+import static utils.Lang.L;
 
 enum ControlType{
     /**
@@ -39,8 +42,10 @@ public class ClientWindow extends JFrame {
         int windowWidth = 500;
         int windowHeight = 300;
 
+        Locale.setDefault(Locale.ENGLISH);
+
         this.initComponent();
-        this.setTitle("被控端");
+        this.setTitle(L("title"));
         this.setSize(windowWidth, windowHeight);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -55,8 +60,8 @@ public class ClientWindow extends JFrame {
 
     void initComponent() {
         this.setLayout(new FlowLayout());
-        JButton listenButton = new JButton("接收连接");
-        JButton connectButton = new JButton("连接");
+        JButton listenButton = new JButton(L("accept_connect_btn"));
+        JButton connectButton = new JButton(L("connect_btn"));
 
         // 被控
         listenButton.addMouseListener(new MouseAdapter() {
@@ -64,11 +69,11 @@ public class ClientWindow extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 controlType = ControlType.CONTROLLED;
                 if (isRunning) {
-                    listenButton.setText("接收连接");
+                    listenButton.setText(L("accept_connect_btn"));
 
                 } else {
                     isRunning = true;
-                    listenButton.setText("停止");
+                    listenButton.setText(L("stop"));
                 } 
             }
         });
