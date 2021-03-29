@@ -4,6 +4,11 @@ import client.UnixTime;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.handler.codec.MessageToByteEncoder;
+import pojo.PubImageMessage;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class ServerSocketChannel extends ChannelInboundHandlerAdapter  {
     @Override
@@ -14,8 +19,14 @@ public class ServerSocketChannel extends ChannelInboundHandlerAdapter  {
     }
 
     @Override
-    public void channelActive(final ChannelHandlerContext ctx) { // (1)
-        ChannelFuture f = ctx.writeAndFlush(new UnixTime());
+    public void channelActive(final ChannelHandlerContext ctx) throws IOException, AWTException { // (1)
+        Robot robot = new Robot();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Rectangle screenRectangle = new Rectangle(screenSize);
+        BufferedImage image = robot.createScreenCapture(screenRectangle);
+
+        PubImageMessage pubImageMessage = new PubImageMessage(image);
+        ChannelFuture f = ctx.writeAndFlush(pubImageMessage);
         f.addListener(ChannelFutureListener.CLOSE);
     }
 }

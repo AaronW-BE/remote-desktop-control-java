@@ -1,7 +1,6 @@
 package pojo;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,14 +8,35 @@ import java.io.IOException;
 public class PubImageMessage extends Message{
     BufferedImage image;
 
-    PubImageMessage() throws IOException {
+    public PubImageMessage() {
+
+    }
+
+    public PubImageMessage(BufferedImage image) throws IOException {
+        this.image = image;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream);
-        this.messageSize = outputStream.size();
+        ImageIO.write(image, "png", outputStream);
+        this.messageSize = getHeadBytes().length + outputStream.size();
     }
 
     @Override
-    byte[] toBytes() {
-        return new byte[0];
+    public byte[] toBytes() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int headSize = getHeadBytes().length;
+        outputStream.write(getHeadBytes(), 0, headSize);
+
+        ByteArrayOutputStream imgOut = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", outputStream);
+            outputStream.write(imgOut.toByteArray(), headSize, outputStream.size());
+            return new byte[0];
+        } catch (IOException e) {
+            e.printStackTrace();
+            return getHeadBytes();
+        }
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 }

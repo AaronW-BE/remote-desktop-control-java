@@ -9,6 +9,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import utils.MessageDecoder;
+import utils.MessageEncoder;
 
 /**
  * @author AaronW
@@ -31,7 +33,8 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
-                            socketChannel.pipeline().addLast(new TimeEncoder(), new ServerSocketChannel());
+                            socketChannel.pipeline().addLast(new MessageEncoder(), new ServerSocketChannel());
+//                            socketChannel.pipeline().addLast(new MessageDecoder(), new ServerSocketChannel());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 120)

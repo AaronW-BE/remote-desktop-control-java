@@ -9,12 +9,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.channel.unix.Unix;
+import utils.MessageDecoder;
 
 import java.util.Date;
 
 public class Client {
     public static void main(String[] args) throws InterruptedException {
-        String host = "192.168.0.102";
+        String host = "192.168.31.242";
         int port = 8899;
 
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -27,7 +28,7 @@ public class Client {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast(new TimeDecoder(), new TimeClientHandler());
+                    socketChannel.pipeline().addLast(new MessageDecoder(), new MyMessageHandler());
                 }
             });
 

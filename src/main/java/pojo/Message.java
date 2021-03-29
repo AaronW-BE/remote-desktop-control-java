@@ -8,7 +8,18 @@ public abstract class Message {
     int type;
     long time = System.currentTimeMillis();
 
-    byte[] getHeadBytes() {
+    public int getType() {
+        return type;
+    }
+
+    public void setHead(int messageSize, int id, int type, long time) {
+        this.messageSize = messageSize;
+        this.id = id;
+        this.type = type;
+        this.time = time;
+    }
+
+    public byte[] getHeadBytes() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.write(messageSize);
         byteArrayOutputStream.write(id);
@@ -17,5 +28,5 @@ public abstract class Message {
         return byteArrayOutputStream.toByteArray();
     }
 
-    abstract byte[] toBytes();
+    public abstract byte[] toBytes();
 }
