@@ -1,40 +1,48 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
  * @author AaronW
  */
 public class Server {
-    private ServerSocket serverSocket;
-    private int port = 8848;
-
-    public static void main(String[] args) throws IOException {
-        new Server().service();
+    private int port = 8899;
+    public static void main(String[] args) throws Exception {
+        new Server().run();
     }
 
-    void service() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            Socket socket = serverSocket.accept();
-            DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+    public void run() throws Exception {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
-                String str = in.readUTF();
-                System.out.println("Client: " + str);
-                System.out.print("Say: ");
-                String replay = scanner.nextLine();
-                out.writeUTF(replay);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        ServerBootstrap b;
+        try {
+            b = new ServerBootstrap();
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) {
+                            socketChannel.pipeline().addLast(new TimeEncoder(), new ServerSocketChannel());
+                        }
+                    })
+                    .option(ChannelOption.SO_BACKLOG, 120)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+
+            ChannelFuture f = b.bind(port).sync();
+            f.channel().closeFuture().sync();
+        } finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
         }
+
     }
 }
