@@ -1,32 +1,32 @@
 package pojo;
 
-import java.io.ByteArrayOutputStream;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class Message {
+
+@org.msgpack.annotation.Message
+@Getter
+@Setter
+public class Message {
     int messageSize;
     int id;
-    int type;
-    long time = System.currentTimeMillis();
+    byte type;
+    long time;
 
-    public int getType() {
-        return type;
+    public Message() {
+        this.messageSize = 100;
+        this.id = 1;
+        this.type = 0x0001;
+        this.time = System.currentTimeMillis();
     }
 
-    public void setHead(int messageSize, int id, int type, long time) {
-        this.messageSize = messageSize;
-        this.id = id;
-        this.type = type;
-        this.time = time;
+    @Override
+    public String toString() {
+        return "Message{" +
+                "messageSize=" + messageSize +
+                ", id=" + id +
+                ", type=" + type +
+                ", time=" + time +
+                '}';
     }
-
-    public byte[] getHeadBytes() {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byteArrayOutputStream.write(messageSize);
-        byteArrayOutputStream.write(id);
-        byteArrayOutputStream.write(type);
-        byteArrayOutputStream.write((int) time);
-        return byteArrayOutputStream.toByteArray();
-    }
-
-    public abstract byte[] toBytes();
 }

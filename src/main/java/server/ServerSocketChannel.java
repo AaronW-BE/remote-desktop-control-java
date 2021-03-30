@@ -1,16 +1,11 @@
 package server;
 
-import client.UnixTime;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import io.netty.handler.codec.MessageToByteEncoder;
-import pojo.PubImageMessage;
-
+import pojo.Message;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class ServerSocketChannel extends ChannelInboundHandlerAdapter  {
+public class ServerSocketChannel extends ChannelHandlerAdapter  {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
         // 当出现异常就关闭连接
@@ -20,20 +15,14 @@ public class ServerSocketChannel extends ChannelInboundHandlerAdapter  {
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws IOException, AWTException { // (1)
-        Robot robot = new Robot();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Rectangle screenRectangle = new Rectangle(screenSize);
-        BufferedImage image = robot.createScreenCapture(screenRectangle);
-
-        PubImageMessage pubImageMessage = new PubImageMessage(image);
-        ChannelFuture f = ctx.writeAndFlush(pubImageMessage);
-        f.addListener(ChannelFutureListener.CLOSE);
+        Message message = new Message();
+        System.out.println(message.getId());
+        ctx.writeAndFlush(message);
+        System.out.println("send msg to client");
     }
-}
 
-class TimeEncoder extends MessageToByteEncoder<UnixTime> {
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, UnixTime unixTime, ByteBuf byteBuf) throws Exception {
-        byteBuf.writeInt((int) unixTime.value());
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("read message from client");
     }
 }
